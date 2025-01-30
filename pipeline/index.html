@@ -245,9 +245,16 @@
                     <button id="save_pipeline" class="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
                         Salvar Pipeline
                     </button>
+                    <button id="export_pipeline" class="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+                        Exportar Pipeline
+                    </button>
                     <button id="clean_pipeline" class="mt-4 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
                         Limpar Pipeline
                     </button>
+                    <br><br>
+                    <input type="file" id="import_pipeline" class="" accept=".json">
+                    <button id="import_pipeline_button" class="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Importar Pipeline</button>
+                    
                 </div>
             </div>
 
@@ -348,8 +355,53 @@
         const clean_pipeline = document.getElementById('clean_pipeline');
         clean_pipeline.addEventListener('click', () => {
             localStorage.removeItem('pipelineData');
+            localStorage.removeItem('linesConnectionsData');
             location.reload();
         });
+
+
+        //exportar o localstorage to a json file
+        const export_pipeline = document.getElementById('export_pipeline');
+        export_pipeline.addEventListener('click', () => {
+            const pipelineData = localStorage.getItem('pipelineData');
+            const linesConnectionsData = localStorage.getItem('linesConnectionsData');
+            const pipeline = {
+                pipelineData: pipelineData,
+                linesConnectionsData: linesConnectionsData
+            };
+            const blob = new Blob([JSON.stringify(pipeline)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'pipeline.json';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        });
+
+        //importar o localstorage from a json file
+        // quando clicar no import_pipeline_button, abrir o input de file
+        const import_pipeline_button = document.getElementById('import_pipeline_button');
+        import_pipeline_button.addEventListener('click', () => {
+            const input = document.getElementById('import_pipeline');
+            input.click();
+        });
+
+        // quando o input de file mudar, ler o arquivo e importar o pipeline
+        const import_pipeline = document.getElementById('import_pipeline');
+        import_pipeline.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            const reader = new FileReader();
+            reader.readAsText(file);
+            reader.onload = () => {
+                const pipeline = JSON.parse(reader.result);
+                localStorage.setItem('pipelineData', pipeline.pipelineData);
+                localStorage.setItem('linesConnectionsData', pipeline.linesConnectionsData);
+            };
+            location.reload();
+        });
+
 
         // Adicionar listeners para componentes arrastáveis
         document.querySelectorAll('.component').forEach(component => {

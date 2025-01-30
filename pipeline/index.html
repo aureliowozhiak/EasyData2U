@@ -333,13 +333,15 @@
                 createPipelineItem(item.type, item.position.x, item.position.y, item.description);
             });
 
+            
+
             const linesConnectionsData = localStorage.getItem('linesConnectionsData');
-            if (linesConnectionsData) {
-                const linesConnections = JSON.parse(linesConnectionsData);
-                linesConnections.forEach(line => {
-                    createConnectionLine(line.left, line.top, line.width, line.transform);
-                });
-            }
+            const linesConnections = JSON.parse(linesConnectionsData);
+            
+            linesConnections.forEach(line => {
+                createConnectionLine(line.left, line.top, line.width, line.transform);
+            });
+           
         }
 
         // Limpar o pipeline do local storage
@@ -373,12 +375,12 @@
             const line = document.createElement('div');
             line.className = 'connection-line';
 
-            console.log(left, top, width, transform);
-            
             line.style.left = `${left}`;
             line.style.top = `${top}`;
             line.style.width = `${width}`;
             line.style.transform = `${transform}`;
+
+            canvas.appendChild(line);
         }
 
         function createPipelineItem(type, x, y, description) {
